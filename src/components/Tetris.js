@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 //Function
+import { createStage } from "../gameHelpers";
 import { randomTetromino } from "../tetrominos";
 
 // Custom Hooks
@@ -19,13 +20,44 @@ export default function Tetris() {
   const [dropTime, setDropTime] = useState(null);
   const [gameOver, setGameOver] = useState(false);
 
-  const [player] = usePlayer();
+  const [player, updatePlayerPos, resetPlayer] = usePlayer();
   const [stage, setStage] = useStage(player);
 
   console.log("re-render");
-  console.log(player);
+
+  const movePlayer = (dir) => {
+    updatePlayerPos({ x: dir, y: 0 });
+  };
+
+  const startGame = () => {
+    // reset everything
+    setStage(createStage());
+    resetPlayer();
+  };
+
+  const drop = () => {
+    console.log("drop");
+    updatePlayerPos({ x: 0, y: 1, collided: false });
+  };
+
+  const dropPlayer = () => {
+    drop();
+  };
+
+  const move = ({ keyCode }) => {
+    if (!gameOver) {
+      if (keyCode === 37) {
+        movePlayer(-1);
+      } else if (keyCode === 39) {
+        movePlayer(1);
+      } else if (keyCode === 40) {
+        dropPlayer();
+      }
+    }
+  };
+
   return (
-    <TetrisWrapperStyle>
+    <TetrisWrapperStyle role="button" tabIndex={0} onKeyDown={(e) => move(e)}>
       <TetrisStyle>
         <Stage stage={stage} />
         <aside>
@@ -39,7 +71,7 @@ export default function Tetris() {
             </div>
           )}
 
-          <StartButton />
+          <StartButton callback={startGame} />
         </aside>
       </TetrisStyle>
     </TetrisWrapperStyle>
