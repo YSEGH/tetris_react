@@ -4,5 +4,5 @@ import React from "react";
 import { DisplayStyle } from "./styles/Display.style";
 
 export default function Display({ gameOver, text }) {
-  return <DisplayStyle>{text}</DisplayStyle>;
+  return <DisplayStyle gameOver={gameOver}>{text}</DisplayStyle>;
 }

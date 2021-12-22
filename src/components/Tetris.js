@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 //Function
 import { checkCollision, createStage } from "../gameHelpers";
-import { randomTetromino } from "../tetrominos";
 
 // Custom Hooks
 import { usePlayer } from "../hooks/usePlayer";
@@ -15,6 +14,7 @@ import StartButton from "./StartButton";
 
 //Style
 import { TetrisWrapperStyle, TetrisStyle } from "./styles/Tetris.style";
+import { useInterval } from "../hooks/useInterval";
 
 export default function Tetris() {
   const [dropTime, setDropTime] = useState(null);
@@ -33,8 +33,9 @@ export default function Tetris() {
 
   const startGame = () => {
     // reset everything
-    setGameOver(false);
     setStage(createStage());
+    setDropTime(1000);
+    setGameOver(false);
     resetPlayer();
   };
 
@@ -52,7 +53,17 @@ export default function Tetris() {
     }
   };
 
+  const keyUp = ({ keyCode }) => {
+    console.log(keyCode);
+    if (!gameOver) {
+      if (keyCode === 40) {
+        setDropTime(1000);
+      }
+    }
+  };
+
   const dropPlayer = () => {
+    setDropTime(null);
     drop();
   };
 
@@ -70,8 +81,17 @@ export default function Tetris() {
     }
   };
 
+  useInterval(() => {
+    drop();
+  }, dropTime);
+
   return (
-    <TetrisWrapperStyle role="button" tabIndex={0} onKeyDown={(e) => move(e)}>
+    <TetrisWrapperStyle
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => move(e)}
+      onKeyUp={(e) => keyUp(e)}
+    >
       <TetrisStyle>
         <Stage stage={stage} />
         <aside>
